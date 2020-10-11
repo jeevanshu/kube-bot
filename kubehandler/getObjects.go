@@ -13,10 +13,10 @@ import (
 var clientset *kubernetes.Clientset
 
 // GetPods function to get pods
-func GetPods(s *discordgo.Session, m *discordgo.MessageCreate) {
+func GetPods(s *discordgo.Session, m *discordgo.MessageCreate, namespace string) {
 
 	// nodelist, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
-	pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
+	pods, err := clientset.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Printf("Error in reading pods: %v", err)
 	}
@@ -42,9 +42,9 @@ func GetNamespace(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 // GetDeploy function to get deployments
-func GetDeploy(s *discordgo.Session, m *discordgo.MessageCreate) {
+func GetDeploy(s *discordgo.Session, m *discordgo.MessageCreate, namespace string) {
 
-	deploy, err := clientset.AppsV1().Deployments("").List(context.TODO(), metav1.ListOptions{})
+	deploy, err := clientset.AppsV1().Deployments(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Printf("Error in getting deployments: %v", err)
 	}
@@ -56,8 +56,8 @@ func GetDeploy(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 // GetSvc function to get Services
-func GetSvc(s *discordgo.Session, m *discordgo.MessageCreate) {
-	service, err := clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{})
+func GetSvc(s *discordgo.Session, m *discordgo.MessageCreate, namespace string) {
+	service, err := clientset.CoreV1().Services(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Printf("Error in getting service: %v", err)
 	}
@@ -69,8 +69,8 @@ func GetSvc(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 // GetIngress function to get Ingress
-func GetIngress(s *discordgo.Session, m *discordgo.MessageCreate) {
-	ingress, err := clientset.NetworkingV1beta1().Ingresses("").List(context.TODO(), metav1.ListOptions{})
+func GetIngress(s *discordgo.Session, m *discordgo.MessageCreate, namespace string) {
+	ingress, err := clientset.NetworkingV1beta1().Ingresses(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Printf("Error in getting ingress: %v", err)
 	}
@@ -96,8 +96,8 @@ func GetNodes(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 // GetConfigMap function to get configmap
-func GetConfigMap(s *discordgo.Session, m *discordgo.MessageCreate) {
-	configMaps, err := clientset.CoreV1().ConfigMaps("").List(context.TODO(), metav1.ListOptions{})
+func GetConfigMap(s *discordgo.Session, m *discordgo.MessageCreate, namespace string) {
+	configMaps, err := clientset.CoreV1().ConfigMaps(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Printf("Error in getting ingress: %v", err)
 	}

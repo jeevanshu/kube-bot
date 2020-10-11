@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
@@ -55,22 +56,44 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	fmt.Printf("Command %v from user %v in channel %v \n", command, user, channel)
-	switch {
-	case command == "!k get pods":
-		kubehandler.GetPods(s, m)
-	case command == "!k get ns":
-		kubehandler.GetNamespace(s, m)
-	case command == "!k get deploy":
-		kubehandler.GetDeploy(s, m)
-	case command == "!k get svc":
-		kubehandler.GetSvc(s, m)
-	case command == "!k get ingress":
-		kubehandler.GetIngress(s, m)
-	case command == "!k get cm":
-		kubehandler.GetConfigMap(s, m)
-	case command == "!k get nodes":
-		kubehandler.GetNodes(s, m)
+	var namespace string
+	args := strings.Fields(command)
+	if args[0] != "!k" {
+		return
+	}
+	if args[1] == "get" {
+		switch {
+		case args[2] == "pods":
+			if len(args) == 4 {
+				namespace = args[3]
+			}
+			kubehandler.GetPods(s, m, namespace)
+		case args[2] == "ns":
+			kubehandler.GetNamespace(s, m)
 
+		case args[2] == "deploy":
+			if len(args) == 4 {
+				namespace = args[3]
+			}
+			kubehandler.GetDeploy(s, m, namespace)
+		case args[2] == "svc":
+			if len(args) == 4 {
+				namespace = args[3]
+			}
+			kubehandler.GetSvc(s, m, namespace)
+		case args[2] == "ingress":
+			if len(args) == 4 {
+				namespace = args[3]
+			}
+			kubehandler.GetIngress(s, m, namespace)
+		case args[2] == "cm":
+			if len(args) == 4 {
+				namespace = args[3]
+			}
+			kubehandler.GetConfigMap(s, m, namespace)
+		case args[2] == "nodes":
+			kubehandler.GetNodes(s, m)
+		}
 	}
 
 }
