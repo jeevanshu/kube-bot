@@ -94,6 +94,35 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case args[2] == "nodes":
 			kubehandler.GetNodes(s, m)
 		}
+	} else if args[1] == "help" {
+		msg := &discordgo.MessageEmbed{
+			Author: &discordgo.MessageEmbedAuthor{
+				Name: "kube-bot help menu",
+			},
+			Description: `To use enter **!k** followed by command, object and namespace
+			`,
+			Footer: &discordgo.MessageEmbedFooter{
+				Text: "kube-bot build using client-go and discordgo, source code at https://github.com/jeevanshu/kube-bot",
+			},
+			Fields: []*discordgo.MessageEmbedField{
+				{
+					Name: "get",
+					Value: `
+					Use this command to read objects **!k get** followed by object
+					Available operations are:
+					- pods
+					- svc
+					- deploy
+					- ns
+					- cm
+					- nodes
+					- ingress
+					example: **!k get deploy test-ns**
+					`,
+				},
+			},
+		}
+		s.ChannelMessageSendEmbed(m.ChannelID, msg)
 	}
 
 }

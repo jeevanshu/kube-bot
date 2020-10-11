@@ -10,7 +10,9 @@ import (
 
 func init() {
 	kubeconfig, envErr := os.LookupEnv("KUBE_CONFIG_PATH")
-	log.Printf("Error in getting env var: %v", envErr)
+	if envErr != true {
+		log.Printf("Error in getting env var: %v", envErr)
+	}
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 
 	if err != nil {
