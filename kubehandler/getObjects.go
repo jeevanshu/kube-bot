@@ -1,11 +1,14 @@
 package kubehandler
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/bwmarrin/discordgo"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -15,7 +18,6 @@ var clientset *kubernetes.Clientset
 // GetPods function to get pods
 func GetPods(s *discordgo.Session, m *discordgo.MessageCreate, namespace string) {
 
-	// nodelist, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	pods, err := clientset.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		log.Printf("Error in reading pods: %v", err)
@@ -106,4 +108,29 @@ func GetConfigMap(s *discordgo.Session, m *discordgo.MessageCreate, namespace st
 		cmList += fmt.Sprintf("%v\n", configMap.Name)
 	}
 	s.ChannelMessageSend(m.ChannelID, cmList)
+}
+
+// GetPodLogs function to get logs from pods
+func GetPodLogs(s *discordgo.Session, m *discordgo.MessageCreate, podName string, namespace string) {
+	pods := clientset.CoreV1().Pods(namespace).GetLogs(podName, &corev1.PodLogOptions{})
+
+	podLogs, err := pods.Stream(context.TODO())
+	if err != nil {
+		log.Printf("Error in reading pods: %v", err)
+	}
+	defer podLogs.Close()
+
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, podLogs)
+	if err != nil {
+		log.Printf("Error in copy information from podLogs to buf")
+	}
+	str := buf.String()
+	msg := &discordgo.MessageEmbed{
+		Author: &discordgo.MessageEmbedAuthor{
+			Name: podName + " logs",
+		},
+		Description: str[len(str)-2000 : len(str)],
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, msg)
 }

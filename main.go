@@ -94,6 +94,8 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case args[2] == "nodes":
 			kubehandler.GetNodes(s, m)
 		}
+	} else if args[1] == "logs" {
+		kubehandler.GetPodLogs(s, m, args[2], args[3])
 	} else if args[1] == "help" {
 		msg := &discordgo.MessageEmbed{
 			Author: &discordgo.MessageEmbedAuthor{
@@ -118,6 +120,13 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 					- nodes
 					- ingress
 					example: **!k get deploy test-ns**
+					`,
+				},
+				{
+					Name: "logs",
+					Value: `
+					Use this command to get logs from pod **!k logs <pod-name> <namespace>** 
+					example: **!k logs nginx nginx-namespace**
 					`,
 				},
 			},
