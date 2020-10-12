@@ -130,7 +130,7 @@ func GetPodLogs(s *discordgo.Session, m *discordgo.MessageCreate, podName string
 		Author: &discordgo.MessageEmbedAuthor{
 			Name: podName + " logs",
 		},
-		Description: str[len(str)-2000 : len(str)],
+		Description: str[len(str)-2000:],
 	}
 	s.ChannelMessageSendEmbed(m.ChannelID, msg)
 }
