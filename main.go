@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	// Token var for getting discord token
 	Token string
 )
 
@@ -96,6 +97,10 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	} else if args[1] == "logs" {
 		kubehandler.GetPodLogs(s, m, args[2], args[3])
+	} else if args[1] == "scale" {
+		kubehandler.UpdateDeployment(s, m, args[2], args[3], args[4])
+	} else if args[1] == "delete" {
+		kubehandler.DeleteDeployment(s, m, args[2], args[3])
 	} else if args[1] == "help" {
 		msg := &discordgo.MessageEmbed{
 			Author: &discordgo.MessageEmbedAuthor{
@@ -127,6 +132,20 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 					Value: `
 					Use this command to get logs from pod **!k logs <pod-name> <namespace>** 
 					example: **!k logs nginx nginx-namespace**
+					`,
+				},
+				{
+					Name: "scale",
+					Value: `
+					To scale up and down number of replicas of deployment **!k scale <namespace> <deployment> <replicas>**
+					examoke **!k scale default nginx 3**
+					`,
+				},
+				{
+					Name: "delete",
+					Value: `
+					To delete objects **!k delete <namespace> <deployment>**
+					examoke **!k delete default nginx**
 					`,
 				},
 			},
