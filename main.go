@@ -144,7 +144,7 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 				{
 					Name: "delete",
 					Value: `
-					To delete objects **!k delete <namespace> <deployment>**
+					To delete objects **!k delete <namespace> <deployment>** and give confirmation to message
 					examoke **!k delete default nginx**
 					`,
 				},
