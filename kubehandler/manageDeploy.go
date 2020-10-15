@@ -32,32 +32,12 @@ func UpdateDeployment(s *discordgo.Session, m *discordgo.MessageCreate, namespac
 }
 
 // DeleteDeployment function to delete deployments
-func DeleteDeployment(s *discordgo.Session, m *discordgo.MessageCreate, namespace string, deploy string) {
+func DeleteDeployment(s *discordgo.Session, m *discordgo.MessageCreate, deploy string, namespace string) {
 
-	var confirmVar bool
-
-	confirmMsg, confErr := s.ChannelMessageSend(m.ChannelID, "Please react with ✅ emoji within 1 min to confirm deletion of "+deploy)
-	if confErr != nil {
-		log.Printf("Error in sending message: %v", confErr)
-	}
+	confirmMsg := sendConfirmMsg(s, m, deploy)
 
 	time.Sleep(1 * time.Minute)
-
-	updatedMsg, err := s.ChannelMessage(m.ChannelID, confirmMsg.ID)
-	if err != nil {
-		log.Printf("Error in getting message: %v", err)
-	}
-	if len(updatedMsg.Reactions) > 1 {
-		confirmVar = false
-	} else {
-		for _, i := range updatedMsg.Reactions {
-			if i.Emoji.Name == "✅" {
-				confirmVar = true
-			} else {
-				confirmVar = false
-			}
-		}
-	}
+	confirmVar := checkConfirmation(s, m, confirmMsg)
 
 	if confirmVar == true {
 		deletePolicy := metav1.DeletePropagationForeground

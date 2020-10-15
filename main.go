@@ -58,6 +58,7 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	fmt.Printf("Command %v from user %v in channel %v \n", command, user, channel)
 	var namespace string
+	namespace = "default"
 	args := strings.Fields(command)
 	if args[0] != "!k" {
 		return
@@ -100,7 +101,30 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	} else if args[1] == "scale" {
 		kubehandler.UpdateDeployment(s, m, args[2], args[3], args[4])
 	} else if args[1] == "delete" {
-		kubehandler.DeleteDeployment(s, m, args[2], args[3])
+		switch {
+		case args[2] == "ns":
+			kubehandler.DeleteNamespace(s, m, args[3])
+		case args[2] == "deploy":
+			if len(args) == 5 {
+				namespace = args[4]
+			}
+			kubehandler.DeleteDeployment(s, m, args[3], namespace)
+		case args[2] == "svc":
+			if len(args) == 5 {
+				namespace = args[4]
+			}
+			kubehandler.DeleteSvc(s, m, args[3], namespace)
+		case args[2] == "ingress":
+			if len(args) == 5 {
+				namespace = args[4]
+			}
+			kubehandler.DeleteIngress(s, m, args[3], namespace)
+		case args[2] == "cm":
+			if len(args) == 5 {
+				namespace = args[4]
+			}
+			kubehandler.DeleteCm(s, m, args[3], namespace)
+		}
 	} else if args[1] == "help" {
 		msg := &discordgo.MessageEmbed{
 			Author: &discordgo.MessageEmbedAuthor{
@@ -116,7 +140,7 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 					Name: "get",
 					Value: `
 					Use this command to read objects **!k get** followed by object
-					Available operations are:
+					Available objects are:
 					- pods
 					- svc
 					- deploy
@@ -144,8 +168,14 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 				{
 					Name: "delete",
 					Value: `
-					To delete objects **!k delete <namespace> <deployment>** and give confirmation to message
-					examoke **!k delete default nginx**
+					To delete objects **!k delete <object> <object-name> <namespace>** and give confirmation to message
+					examoke **!k delete deploy nginx default**
+					Available objects are:				
+					- svc
+					- deploy
+					- ns
+					- cm
+					- ingress
 					`,
 				},
 			},
