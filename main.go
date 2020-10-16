@@ -58,7 +58,7 @@ func commandHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	fmt.Printf("Command %v from user %v in channel %v \n", command, user, channel)
 	var namespace string
-	namespace = "default"
+	namespace = ""
 	args := strings.Fields(command)
 	if args[0] != "!k" {
 		return

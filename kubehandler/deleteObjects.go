@@ -38,6 +38,43 @@ func checkConfirmation(s *discordgo.Session, m *discordgo.MessageCreate, confirm
 	return confirmVar
 }
 
+// DeleteDeployment function to delete deployments
+func DeleteDeployment(s *discordgo.Session, m *discordgo.MessageCreate, deploy string, namespace string) {
+
+	confirmMsg := sendConfirmMsg(s, m, deploy)
+
+	time.Sleep(1 * time.Minute)
+	confirmVar := checkConfirmation(s, m, confirmMsg)
+
+	if confirmVar == true {
+		deletePolicy := metav1.DeletePropagationForeground
+		err := clientset.AppsV1().Deployments(namespace).Delete(context.TODO(), deploy, metav1.DeleteOptions{
+			PropagationPolicy: &deletePolicy,
+		})
+		if err != nil {
+			log.Printf("Error in deleting deployment : %v", err)
+		}
+
+		msg := &discordgo.MessageEmbed{
+			Author: &discordgo.MessageEmbedAuthor{
+				Name: deploy + " Deleted",
+			},
+			Description: "Successfully deleted deployment " + deploy,
+		}
+		s.ChannelMessageSendEmbed(m.ChannelID, msg)
+	} else {
+
+		msg := &discordgo.MessageEmbed{
+			Author: &discordgo.MessageEmbedAuthor{
+				Name: deploy + " Deletion Aborted",
+			},
+			Description: "Deletetion aborted for deployment " + deploy,
+		}
+		s.ChannelMessageSendEmbed(m.ChannelID, msg)
+	}
+
+}
+
 // DeleteSvc function to delete services
 func DeleteSvc(s *discordgo.Session, m *discordgo.MessageCreate, svc string, namespace string) {
 

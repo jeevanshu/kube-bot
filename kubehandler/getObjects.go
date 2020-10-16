@@ -10,10 +10,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 )
-
-var clientset *kubernetes.Clientset
 
 // GetPods function to get pods
 func GetPods(s *discordgo.Session, m *discordgo.MessageCreate, namespace string) {
